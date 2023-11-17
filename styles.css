@@ -1,0 +1,75 @@
+#root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 14, 14, 0.95);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI';
+    color: beige;
+}
+
+#chat {
+    width: 90vw;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 60px;
+}
+
+.chatItem {
+    width: 70vw;
+    padding: 10px;
+    color: rgb(180, 180, 180);
+    font-size: 13;
+    border-radius: 10px;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+}
+.mensaje {
+    background: rgb(35, 39, 39);
+}
+.respuesta {
+    background: rgb(30, 34, 34);
+    margin-left: 15vw;
+}
+.fecha {
+    font-size: 10px;
+    color: gray;
+}
+
+#texto {
+    padding: 10px;
+    background-color: rgb(30, 34, 34);
+    border-radius: 5px;
+    color: white;
+    border: 1px rgb(70, 74, 74) solid;
+    width: 80vw;
+}
+
+#boton {
+    background-color: rgb(30, 34, 34);
+    border-radius: 5px;
+    padding: 10px;
+    color: white;
+    border: 1px rgb(70, 74, 74) solid;
+}
+#boton:hover {
+    background-color: rgb(80, 84, 84);
+    cursor: pointer;
+}
+
+#formulario {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    width: 100%;
+    position: fixed;
+    bottom: 0px;
+    padding: 15px;
+    border-top: 1px gray solid;
+    background-color: rgb(20, 24, 24);
+    border-radius: 5px;
+}
