@@ -1,7 +1,10 @@
 const { app, ipcMain, BrowserWindow} = require('electron')
 const path = require('node:path')
-const { saveMessage, getMessages, startConnection, closeConnection, saveResponse } = require('./app/database')
+const { saveMessage, saveResponse } = require('./app/services/database')
 const { send2ChatGPT } = require('./app/services/chatgpt')
+// const { login } = require('./app/services/authentication')
+
+let mainWindow 
 
 const createWindow = () => {
     const win = new BrowserWindow({
@@ -12,31 +15,12 @@ const createWindow = () => {
             preload: path.join(__dirname, 'preload.js')
         }
     })
-
     win.loadFile('index.html')
-    .then(()=>{
-        // Conexion con la base de datos
-        startConnection()
-        try {
-            getMessages()
-            .then((res)=>{
-                // El callback envia los datos al render
-                win.webContents.send("on-start", { messages:res})
-            })
-            .catch((error)=>{
-                console.error(error)
-            })
-        }
-        catch(error) {
-            console.error(error)
-        }
-    })
-    return win
+    return win 
 }
 
-var window
 app.whenReady().then(() => {
-    window = createWindow()
+    mainWindow = createWindow()
 })
 
 app.on('window-all-closed', () => {
@@ -49,19 +33,24 @@ ipcMain.on("send-message", (event, message) => {
     saveMessage(message)
     .then(mes=> {
         // Gestion de la consulta
-        window.webContents.send("on-message", {message:mes})
+        mainWindow.webContents.send("on-message", {message:mes.data})
         // Obteniendo la respuesta de ChatGPT 
         send2ChatGPT(message)
         .then(response => {
             // Gestionando la respuesta
             saveResponse(mes.id, response)
             .then(res=>{
-                window.webContents.send("on-response", {response:res})
+                mainWindow.webContents.send("on-response", {response:res.data})
             })
             .catch(error=>console.error(error))
         })
         .catch(error=>console.error(error))
     })
     .catch(err=>console.error(err))
-
 })
+
+/*
+ipcMain.on("send-login", (event, _data) => {
+    login()
+})
+*/

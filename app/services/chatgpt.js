@@ -4,7 +4,7 @@ require('dotenv').config()
 var messagesHistoric = [
   {
     "role": "system",
-    "content": "Eres un asistente enfocado en topicos de programacion"
+    "content": "Eres un asistente que solamente trata topicos relacionados a la tecnologia, especificamente a la programación."
   },
 ]
 
@@ -18,14 +18,15 @@ const send2ChatGPT = async (consulta) => {
       model: "gpt-3.5-turbo",
       messages: messagesHistoric
     })
+    return completion.choices[0].message.content
   }
   catch (error)
   {
     console.error("Error: Referente a las limitaciones de consultas a ChatGPT")
+    console.error(error)
     // Mientras la API esta desactivada, se retornara un mensaje de prueba
     return "Mensaje de respuesta temporal"
   }
-  return completion.choices[0].message.content
 }
 
 exports.send2ChatGPT = send2ChatGPT
