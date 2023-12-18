@@ -28,14 +28,15 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
 })
 
-ipcMain.on("send-message", (event, message) => {
+ipcMain.on("send-message", (event, message, sugerencia) => {
     // Gestionando el mensaje
-    saveMessage(message)
+    saveMessage(message, sugerencia)
     .then(mes=> {
         // Gestion de la consulta
         mainWindow.webContents.send("on-message", {message:mes.data})
         // Obteniendo la respuesta de ChatGPT 
-        send2ChatGPT(message)
+        let entrada = sugerencia?sugerencia:message
+        send2ChatGPT(entrada)
         .then(response => {
             // Gestionando la respuesta
             saveResponse(mes.id, response)
@@ -49,8 +50,10 @@ ipcMain.on("send-message", (event, message) => {
     .catch(err=>console.error(err))
 })
 
-/*
-ipcMain.on("send-login", (event, _data) => {
-    login()
+ipcMain.on("send-improve", (event, data) => {
+    send2ChatGPT(data, true)
+    .then(response => {
+        mainWindow.webContents.send("on-improved", {response:response})
+    })
+    .catch(error=>console.error(error))
 })
-*/

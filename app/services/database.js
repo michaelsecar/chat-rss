@@ -4,8 +4,8 @@ const { app } = require('./firebaseSetup')
 
 const db = getFirestore(app)
 
-async function saveMessage(message) {
-    const data = { mensaje: message, fecha_envio: serverTimestamp() }
+async function saveMessage(message, sugerencia) {
+    const data = { mensaje: message, sugerencia: sugerencia, fecha_envio: serverTimestamp() }
     const res = await addDoc(collection(db, 'consultas'), data)
     return {id:res.id, data:data}
 }

@@ -4,19 +4,26 @@ const loginButton = document.getElementById("ingresar")
 const improveButton = document.getElementById("mejorar")
 const chatNode = document.getElementById("chat")
 
+var sugerencia = ""
+var tipo = ""
+var mensaje = ""
+
+textInput.addEventListener("keyup", (event)=>{
+    sugerencia = ""
+    tipo = ""
+    mensaje = event.target.value
+})
+
 sendButton.addEventListener("click", (event) => {
     event.preventDefault()
-    let texto = textInput.value
-    window.electronAPI.sendMessage(texto)
+    window.electronAPI.sendMessage(mensaje, sugerencia)
     textInput.value = ""
 }) 
 
 improveButton.addEventListener("click", (event)=>{
     event.preventDefault()
     console.log("Mejora de la respuesta")
-    let texto = textInput.value
-    // Solicitud al proceso principal de atender la cadena mediante le modelo
-    // window.electronAPI.improveMessage(texto)
+    window.electronAPI.sendImprove(mensaje)
 })
 
 const renderChatItem = (text, date, type) => {
@@ -25,7 +32,15 @@ const renderChatItem = (text, date, type) => {
     div.classList.add("chatItem")
     div.classList.add(type)
     div_date.classList.add("fecha")
-    div.innerHTML = text
+    // Manejando el codigo generado
+    const hasCodeBlock = text.includes("```");
+    if (hasCodeBlock) {
+        const codeContent = text.replace(/```([\s\S]+?)```/g, '</p><pre><code>$1</code></pre><p>')
+        div.innerHTML = `<p>${codeContent}</p>`
+    }
+    else {
+        div.innerHTML = text
+    }
     div_date.innerHTML = date
     div.appendChild(div_date)
     chatNode.appendChild(div)
@@ -36,7 +51,14 @@ window.electronAPI.onLogin((event, data)=>{
 })
 
  window.electronAPI.onImproved((event, data)=>{
-    console.log("Se ha recibido la sugerencia del modelo")
+    // prompt, suggestion, type
+    formated = JSON.parse(data.response)
+    // Actualizando entrada
+    sugerencia = formated.sugestion??formated.sugerencia??formated.suggestion
+    tipo = formated.type??formated.tipo
+    textInput.value = sugerencia 
+    console.log(formated)
+    // Actualizando variables globales
 }) 
 
 const getTimeFormated = () => {
